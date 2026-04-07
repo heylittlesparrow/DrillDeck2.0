@@ -312,3 +312,48 @@ button:hover {
   color: var(--primary-purple);
   text-decoration: underline;
 }
+/* --- MOBILE SPECIFIC FIXES --- */
+@media (max-width: 600px) {
+  
+  /* 1. Fix the 'Home' vs 'Back' Collision */
+  .container {
+    /* Push everything down so it doesn't hide under the floating Home button */
+    padding-top: 80px; 
+  }
+
+  .btn-home-corner {
+    /* Make the home button a bit smaller on mobile */
+    top: 10px;
+    left: 10px;
+    font-size: 1.2rem;
+    padding: 8px 12px;
+  }
+
+  /* 2. Fix the 'Squished' Card */
+  .card-controls-top {
+    /* Make sure the buttons stay within the width of the phone screen */
+    max-width: 95%; 
+  }
+
+  .card-container {
+    /* Instead of 500px, let the card take up 95% of the phone's width */
+    width: 95% !important;
+    max-width: 95% !important;
+    height: auto !important; /* Allow the height to grow naturally */
+    min-height: 200px !important; /* Lower the floor for mobile */
+    padding: 10px;
+  }
+
+  .flashcard-image {
+    /* This ensures the image keeps its shape (proportions) */
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain;
+  }
+
+  .nav-controls {
+    /* Tighten the bottom controls for smaller screens */
+    width: 95%;
+    gap: 10px;
+  }
+}
