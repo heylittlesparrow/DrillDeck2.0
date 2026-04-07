@@ -1,0 +1,314 @@
+/* src/App.css */
+:root {
+  /* Border Colours (The bold outer lines) */
+  --gpc-color: #5B7A6E;
+  --decodable-color: #6D5A7B;
+  --hfw-color: #4A728A;
+  --morpheme-color: #8C6543;
+  --sentence-color: #855858;
+
+  /* NEW: Background Colours (The 'coloured' card faces) */
+  --gpc-bg: #E0F0E8;
+  --decodable-bg: #EADDF0;
+  --hfw-bg: #D7E6EF;
+  --morpheme-bg: #F3E1CF;
+  --sentence-bg: #ECD6D6;
+
+  --bg-color: #f2f2f2;
+  --text-color: #1a1a1a;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: var(--primary-purple);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 30px;
+}
+
+/* The Selection Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+button {
+  background-color: white;
+  border: 3px solid #ddd;
+  border-radius: 12px;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary-purple);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Flashcard Styling */
+.card-container {
+  max-width: 500px;
+  min-height: 300px; /* This is the "Anchor" - keeps the card from shrinking */
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border: 5px solid transparent;
+  
+  /* These lines keep everything spaced out perfectly inside the card */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+}
+
+/* Category-specific Styles (Border + Background) */
+.card-gpc { 
+  border-color: var(--gpc-color); 
+  background-color: var(--gpc-bg); 
+}
+.card-decodable { 
+  border-color: var(--decodable-color); 
+  background-color: var(--decodable-bg); 
+}
+.card-hfw { 
+  border-color: var(--hfw-color); 
+  background-color: var(--hfw-bg); 
+}
+.card-morpheme { 
+  border-color: var(--morpheme-color); 
+  background-color: var(--morpheme-bg); 
+}
+.card-sentence { 
+  border-color: var(--sentence-color); 
+  background-color: var(--sentence-bg); 
+}
+
+/* Update the Audio Buttons to match the card color */
+.card-gpc .btn-audio { background-color: var(--gpc-color); }
+.card-decodable .btn-audio { background-color: var(--decodable-color); }
+.card-hfw .btn-audio { background-color: var(--hfw-color); }
+.card-morpheme .btn-audio { background-color: var(--morpheme-color); }
+
+.flashcard-image {
+  width: 100%;
+  height: auto;
+  border-radius: 15px;
+  display: block;
+}
+
+/* Audio Controls */
+.audio-section {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  min-height: 55px; /* Reserves the exact height of one row of buttons */
+  align-items: center;
+}
+
+.btn-audio {
+  background-color: var(--primary-purple);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+}
+
+/* Navigation Controls */
+.nav-controls {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.counter {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #7f8c8d;
+}
+/* The big hero button for General Revision */
+.btn-general {
+  width: 100%;
+  padding: 25px;
+  background-color: #ddd;
+  color: rgb(110, 109, 109);
+  font-size: 1.4rem;
+  border: none;
+  margin-bottom: 10px;
+}
+
+/* Home button for navigation */
+.btn-home {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px 15px;
+  background: #eee;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
+/* The Start button on the config page */
+.btn-start {
+  margin-top: 30px;
+  padding: 20px 50px;
+  background-color: var(--primary-green);
+  color: rgb(0, 0, 0);
+  border: none;
+  font-size: 1.2rem;
+}
+
+.config-box {
+  background: rgb(227, 224, 224);
+  padding: 30px;
+  border-radius: 20px;
+  display: inline-block;
+  text-align: left;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.toggle-row {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.toggle-label {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.depth-selector {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* 1. The Base State: Both buttons look identical initially */
+.depth-selector button {
+  background-color: #ffffff !important; /* Light background */
+  color: #333333 !important;           /* Dark text */
+  border: 3px solid #333333 !important; /* Dark, bold border */
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  box-shadow: none;
+}
+
+/* 2. The Hover State: Lift slightly, but NO color change */
+.depth-selector button:hover {
+  transform: translateY(-4px); /* The 'lift' effect */
+  background-color: #ffffff !important; /* Force it to stay light */
+  /* No change to border or text color */
+}
+
+/* 3. The Clicked (Selected) State: Background turns Mint Green */
+.depth-selector button.active {
+  background-color: #b7d5c9 !important; /* Your specific Green */
+  color: #333333 !important;           /* Keep text dark */
+  border-color: #333333 !important;    /* Keep border dark */
+  transform: translateY(0);            /* Snaps back down when selected */
+}
+.btn-explainer {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 50%; /* Makes it a neat circle */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none; /* Removes the blue underline */
+  font-size: 1.2rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+  z-index: 10; /* Ensures it stays on top of the image */
+}
+
+.btn-explainer:hover {
+  transform: scale(1.1);
+  border-color: var(--primary-purple);
+  background-color: #f0f0f0;
+}
+/* Persistent Home Button in Top Left */
+.btn-home-corner {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 100;
+}
+
+/* The row sitting above the card */
+.card-controls-top {
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 5px;
+  margin-bottom: 5px; /* Keeps it tight to the card */
+}
+
+/* Styled 'Teach Me' Link */
+.btn-teach {
+  background-color: white;
+  color: #333;
+  border: 2px solid #333;
+  padding: 8px 16px;
+  border-radius: 10px 10px 0 0; /* Rounded top only to 'sit' on the card */
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-teach:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+/* Simplified Back Button */
+.btn-secondary {
+  background: none;
+  border: none;
+  color: #666;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.btn-secondary:hover {
+  color: var(--primary-purple);
+  text-decoration: underline;
+}
