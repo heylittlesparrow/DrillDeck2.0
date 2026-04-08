@@ -1,359 +1,258 @@
-/* src/App.css */
 :root {
-  /* Border Colours (The bold outer lines) */
-  --gpc-color: #5B7A6E;
-  --decodable-color: #6D5A7B;
-  --hfw-color: #4A728A;
-  --morpheme-color: #8C6543;
-  --sentence-color: #855858;
-
-  /* NEW: Background Colours (The 'coloured' card faces) */
-  --gpc-bg: #E0F0E8;
-  --decodable-bg: #EADDF0;
-  --hfw-bg: #D7E6EF;
-  --morpheme-bg: #F3E1CF;
-  --sentence-bg: #ECD6D6;
-
-  --bg-color: #f2f2f2;
-  --text-color: #1a1a1a;
+  --primary-purple: #333;
+  --primary-mint: #b7d5c9;
+  --banner-gold: #edd495;
+  --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
 }
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-gradient);
+  color: #333;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- PHASE 1: BANNER & TITLE --- */
+.app-banner {
+  background-color: var(--banner-gold);
+  width: 100%;
+  padding: 30px 0;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.app-banner h1 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 2.4rem;
+  letter-spacing: -0.5px;
 }
 
 .container {
-  max-width: 800px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 20px;
   text-align: center;
 }
 
-h1 {
-  font-size: 2.5rem;
-  color: var(--primary-purple);
-  text-transform: uppercase;
-  letter-spacing: 2px;
+/* --- NAVIGATION & BUTTONS (Fixed XP Look) --- */
+.btn-home-corner {
+  position: fixed; /* Takes it completely out of the page flow on desktop */
+  top: 20px;
+  left: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-family: 'Poppins';
+  z-index: 2000; /* Highest z-index to stay on top of everything */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* --- THE "GLASS" SYSTEM (Phases 1 & 2) --- */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   margin-bottom: 30px;
 }
 
-/* The Selection Grid */
+/* --- BUTTONS & GRID (7 Columns) --- */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(7, 1fr); /* Desktop dashboard look */
   gap: 15px;
 }
 
-button {
-  background-color: white;
-  border: 3px solid #ddd;
-  border-radius: 12px;
-  padding: 15px;
-  font-size: 1.1rem;
-  font-weight: bold;
+.grid button, .btn-matching-style, .nav-btn-edge, .btn-audio {
+  background: white;
+  border: 2px solid #eee;
+  padding: 18px 10px;
+  border-radius: 18px;
+  font-family: 'Poppins';
+  font-weight: 700;
+  font-size: 1rem;
+  color: #444;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s ease;
+  width: 100%;
 }
 
-button:hover {
-  transform: translateY(-3px);
+.grid button:hover, .btn-matching-style:hover, .nav-btn-edge:hover, .btn-audio:hover {
   border-color: var(--primary-purple);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(124, 93, 250, 0.1);
 }
 
-/* Flashcard Styling */
-.card-container {
-  max-width: 500px;
-  min-height: 300px; /* This is the "Anchor" - keeps the card from shrinking */
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 25px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  border: 5px solid transparent;
-  
-  /* These lines keep everything spaced out perfectly inside the card */
+/* --- MINT CHIP SELECTORS (Phase 2) --- */
+.selector-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.chip-btn {
+  flex: 1;
+  min-width: 140px;
+  padding: 15px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chip-btn.active {
+  background: var(--primary-mint) !important;
+  border-color: #333 !important;
+  transform: scale(1.05);
+}
+
+/* --- THE FLASHCARD STAGE (Phase 3) --- */
+.card-wrapper {
+  position: relative; /* Create stacking context for tabs */
+  width: 95%;
+  max-width: 600px;
+  margin: 80px auto 20px;
+  z-index: 1; /* Lowest z-index in its stacking context */
+}
+
+.card-tab {
+  position: absolute;
+  top: -48px; /* Standardised to clear 4px card border */
+  background: white;
+  padding: 0 25px; /* Nudged in to meet the curve, logic from last turn restored */
+  border: 2px solid #ddd;
+  border-bottom: none; /* foldertab look */
+  border-radius: 18px 18px 0 0;
+  font-weight: 700;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+  cursor: pointer;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1; /* Tucked behind the card context */
+  box-sizing: border-box; 
+}
+
+.back-tab { left: 25px; } /* Meets the rounded curve */
+.teach-tab { right: 25px; } /* Meets the rounded curve */
+
+.white-card {
+  position: relative;
+  width: 100%;
+  height: 340px; /* Taller for bigger images */
+  border-radius: 40px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; 
-}
-
-/* Category-specific Styles (Border + Background) */
-.card-gpc { 
-  border-color: var(--gpc-color); 
-  background-color: var(--gpc-bg); 
-}
-.card-decodable { 
-  border-color: var(--decodable-color); 
-  background-color: var(--decodable-bg); 
-}
-.card-hfw { 
-  border-color: var(--hfw-color); 
-  background-color: var(--hfw-bg); 
-}
-.card-morpheme { 
-  border-color: var(--morpheme-color); 
-  background-color: var(--morpheme-bg); 
-}
-.card-sentence { 
-  border-color: var(--sentence-color); 
-  background-color: var(--sentence-bg); 
-}
-
-/* Update the Audio Buttons to match the card color */
-.card-gpc .btn-audio { background-color: var(--gpc-color); }
-.card-decodable .btn-audio { background-color: var(--decodable-color); }
-.card-hfw .btn-audio { background-color: var(--hfw-color); }
-.card-morpheme .btn-audio { background-color: var(--morpheme-color); }
-
-.flashcard-image {
-  width: 100%;
-  height: auto;
-  border-radius: 15px;
-  display: block;
-}
-
-/* Audio Controls */
-.audio-section {
-  margin-top: 25px;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  min-height: 55px; /* Reserves the exact height of one row of buttons */
   align-items: center;
-}
-
-.btn-audio {
-  background-color: var(--primary-purple);
-  color: white;
-  border: none;
-  padding: 12px 25px;
-}
-
-/* Navigation Controls */
-.nav-controls {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.counter {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #7f8c8d;
-}
-/* The big hero button for General Revision */
-.btn-general {
-  width: 100%;
-  padding: 25px;
-  background-color: #ddd;
-  color: rgb(110, 109, 109);
-  font-size: 1.4rem;
-  border: none;
-  margin-bottom: 10px;
-}
-
-/* Home button for navigation */
-.btn-home {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  padding: 10px 15px;
-  background: #eee;
-  border: 1px solid #ccc;
-  font-size: 0.9rem;
-}
-
-/* The Start button on the config page */
-.btn-start {
-  margin-top: 30px;
-  padding: 20px 50px;
-  background-color: var(--primary-green);
-  color: rgb(0, 0, 0);
-  border: none;
-  font-size: 1.2rem;
-}
-
-.config-box {
-  background: rgb(227, 224, 224);
+  justify-content: flex-start;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.1);
   padding: 30px;
-  border-radius: 20px;
-  display: inline-block;
-  text-align: left;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 4px solid #e0e0e0;
+  background: #fff;
+  box-sizing: border-box;
+  z-index: 2; /* Sits on TOP of the tabs */
 }
 
-.toggle-row {
-  margin: 15px 0;
+/* Dynamic Category Backgrounds */
+.white-card.gpc { background: #e0f0e8; border-color: #5b7a6e; }
+.white-card.decodable { background: #eaddf0; border-color: #6d5a7b; }
+.white-card.hfw { background: #d7e6ef; border-color: #4a728a; }
+.white-card.morpheme { background: #f3e1cf; border-color: #8c6543; }
+.white-card.sentence { background: #ecd6d6; border-color: #855858; }
+
+.card-content-img {
+  max-width: 95%;
+  max-height: 220px; /* Maximised image size */
+  object-fit: contain;
+  margin-top: 5px;
+}
+
+.card-content-text {
+  font-size: clamp(4rem, 15vw, 9rem);
+  font-weight: 700;
+  margin-top: 45px;
+}
+
+.audio-row {
+  margin-top: auto;
   display: flex;
-  align-items: center;
   gap: 15px;
-}
-
-.toggle-label {
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-.depth-selector {
-  display: flex;
+  width: 100%;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  padding-bottom: 5px;
 }
 
-/* 1. The Base State: Both buttons look identical initially */
-.depth-selector button {
-  background-color: #ffffff !important; /* Light background */
-  color: #333333 !important;           /* Dark text */
-  border: 3px solid #333333 !important; /* Dark, bold border */
-  padding: 12px 24px;
-  font-size: 1rem;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  box-shadow: none;
-}
-
-/* 2. The Hover State: Lift slightly, but NO color change */
-.depth-selector button:hover {
-  transform: translateY(-4px); /* The 'lift' effect */
-  background-color: #ffffff !important; /* Force it to stay light */
-  /* No change to border or text color */
-}
-
-/* 3. The Clicked (Selected) State: Background turns Mint Green */
-.depth-selector button.active {
-  background-color: #b7d5c9 !important; /* Your specific Green */
-  color: #333333 !important;           /* Keep text dark */
-  border-color: #333333 !important;    /* Keep border dark */
-  transform: translateY(0);            /* Snaps back down when selected */
-}
-.btn-explainer {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: white;
-  border: 2px solid #ddd;
-  border-radius: 50%; /* Makes it a neat circle */
-  width: 40px;
-  height: 40px;
-  display: flex;
+/* --- THE PROTECTED NAV GRID --- */
+.drill-nav-controls {
+  display: grid;
+  grid-template-columns: 1fr 100px 1fr; /* Fixed 100px lane for the counter */
   align-items: center;
-  justify-content: center;
-  text-decoration: none; /* Removes the blue underline */
-  font-size: 1.2rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: all 0.2s ease;
-  z-index: 10; /* Ensures it stays on top of the image */
-}
-
-.btn-explainer:hover {
-  transform: scale(1.1);
-  border-color: var(--primary-purple);
-  background-color: #f0f0f0;
-}
-/* Persistent Home Button in Top Left */
-.btn-home-corner {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  background: white;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  padding: 10px 15px;
-  font-size: 1.5rem;
-  cursor: pointer;
-  z-index: 100;
-}
-
-/* The row sitting above the card */
-.card-controls-top {
-  max-width: 500px;
+  width: 95%;
+  max-width: 600px;
   margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 0 5px;
-  margin-bottom: 5px; /* Keeps it tight to the card */
 }
 
-/* Styled 'Teach Me' Link */
-.btn-teach {
-  background-color: white;
-  color: #333;
+.nav-btn-edge {
+  background: white;
   border: 2px solid #333;
-  padding: 8px 16px;
-  border-radius: 10px 10px 0 0; /* Rounded top only to 'sit' on the card */
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: bold;
-  transition: all 0.2s;
-}
-
-.btn-teach:hover {
-  background-color: #f0f0f0;
-  transform: translateY(-2px);
-}
-
-/* Simplified Back Button */
-.btn-secondary {
-  background: none;
-  border: none;
-  color: #666;
-  font-weight: bold;
+  padding: 15px 10px;
+  border-radius: 15px;
+  font-weight: 700;
   cursor: pointer;
-  padding: 8px 0;
+  white-space: nowrap;
 }
 
-.btn-secondary:hover {
-  color: var(--primary-purple);
-  text-decoration: underline;
+.btn-start {
+  background: var(--primary-mint);
+  padding: 22px 90px;
+  border-radius: 50px;
+  border: 2px solid #333;
+  font-weight: 800;
+  font-size: 1.3rem;
+  box-shadow: 0 6px 0 #94b5a8;
 }
-/* --- MOBILE SPECIFIC FIXES --- */
+
+.success-star { font-size: 6.5rem; display: block; margin-bottom: 30px; }
+
+/* --- THE MOBILE FIXES --- */
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 600px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
   
-  /* 1. Fix the 'Home' vs 'Back' Collision */
-  .container {
-    /* Push everything down so it doesn't hide under the floating Home button */
-    padding-top: 80px; 
+  /* Flex Column to ensure correct order */
+  .container { display: flex; flex-direction: column; }
+  
+  .btn-home-corner { 
+    position: relative; 
+    margin: 0 auto 25px auto; /* PERFECT CENTERING */
+    align-self: center;       /* EXTRA CENTERING FOR FLEX */
+    top: 0; 
+    left: 0; 
+    display: inline-block; 
   }
+  
+  .card-wrapper { margin-top: 50px; order: 2; }
+  .drill-nav-controls { grid-template-columns: 1fr 80px 1fr; order: 3; }
 
-  .btn-home-corner {
-    /* Make the home button a bit smaller on mobile */
-    top: 10px;
-    left: 10px;
-    font-size: 1.2rem;
-    padding: 8px 12px;
-  }
-
-  /* 2. Fix the 'Squished' Card */
-  .card-controls-top {
-    /* Make sure the buttons stay within the width of the phone screen */
-    max-width: 95%; 
-  }
-
-  .card-container {
-    /* Instead of 500px, let the card take up 95% of the phone's width */
-    width: 95% !important;
-    max-width: 95% !important;
-    height: auto !important; /* Allow the height to grow naturally */
-    min-height: 200px !important; /* Lower the floor for mobile */
-    padding: 10px;
-  }
-
-  .flashcard-image {
-    /* This ensures the image keeps its shape (proportions) */
-    width: 100% !important;
-    height: auto !important;
-    object-fit: contain;
-  }
-
-  .nav-controls {
-    /* Tighten the bottom controls for smaller screens */
-    width: 95%;
-    gap: 10px;
+  /* Audio Button Mobile Polish */
+  .btn-audio {
+    font-size: 0.85rem;  /* Shrunk font to match */
+    padding: 10px 8px;   /* Tighter horizontal padding */
+    white-space: nowrap; /* Forces one line for Grapheme */
   }
 }

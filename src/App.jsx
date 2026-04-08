@@ -1,233 +1,165 @@
-import './App.css';import React, { useState, useEffect } from 'react';
+import './App.css';
+import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 
-// 1. PASTE YOUR PUBLISHED CSV URL BELOW (Inside the quotes)
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRV540TGRQ-rh5ggQZIjpceWkBtztku1cuqMzKT0gnJf6m_IG5bGd874o2tS5T0pBX3GDHKsLH78MXM/pub?gid=0&single=true&output=csv";
 
 function App() {
-  const [reviewDepth, setReviewDepth] = useState(10);
-  const [mode, setMode] = useState('specific');
+  const [view, setView] = useState('landing');
   const [allData, setAllData] = useState([]);
-  const [view, setView] = useState('landing'); 
-  const [selectedSet, setSelectedSet] = useState(null);
-  const [toggles, setToggles] = useState({ gpc: true, decodable: true, hfw: true, morpheme: false, sentence: false });
   const [deck, setDeck] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedSet, setSelectedSet] = useState(1);
+  const [mode, setMode] = useState('specific');
+  const [reviewDepth, setReviewDepth] = useState(10);
+  const [toggles, setToggles] = useState({ gpc: true, decodable: true, hfw: true, morpheme: false, sentence: false });
 
-  // Fetch data on load
   useEffect(() => {
-    if (CSV_URL !== "PASTE_YOUR_LINK_HERE") {
-      Papa.parse(CSV_URL, {
-        download: true,
-        header: true,
-        complete: (results) => {
-          console.log("Data loaded:", results.data);
-          setAllData(results.data);
-        },
-        error: (error) => console.error("Error loading CSV:", error)
-      });
-    }
+    Papa.parse(CSV_URL, {
+      download: true,
+      header: true,
+      complete: (res) => setAllData(res.data)
+    });
   }, []);
 
-  // Logic to build the session deck
- const startSession = () => {
-    let sessionPool = [];
-    const setsToInclude = mode === 'general' 
-      ? allData.filter(row => parseInt(row.Set) <= selectedSet) 
-      : allData.filter(row => parseInt(row.Set) === selectedSet);
+  const playAudio = (url) => { if (url) new Audio(url).play(); };
 
-    const order = ['gpc', 'decodable', 'hfw', 'morpheme', 'sentence'];
+  const startSession = () => {
+    const categoryOrder = ['gpc', 'decodable', 'hfw', 'morpheme', 'sentence'];
+    let finalDeck = [];
 
-    // Determine the cap: 
-    // If Specific mode: cap is 10. 
-    // If General mode: use the reviewDepth (5 or 10).
-    const limit = mode === 'general' ? reviewDepth : 10;
-
-    order.forEach(cat => {
+    categoryOrder.forEach(cat => {
       if (toggles[cat]) {
-        let catItems = setsToInclude.filter(row => row.Category && row.Category.toLowerCase() === cat);
-        
-        // Shuffle the available cards for this category
-        catItems = catItems.sort(() => 0.5 - Math.random());
-        
-        // Apply the limit to EVERY category now
-        catItems = catItems.slice(0, limit);
-        
-        sessionPool = [...sessionPool, ...catItems];
+        const pool = allData.filter(item => {
+          const itemSet = Number(item.Set);
+          const itemCat = (item.Category || "").toLowerCase().trim();
+          const matchesSet = mode === 'general' ? itemSet <= selectedSet : itemSet === selectedSet;
+          return matchesSet && itemCat === cat;
+        });
+        const sliced = [...pool].sort(() => Math.random() - 0.5).slice(0, reviewDepth);
+        finalDeck = [...finalDeck, ...sliced];
       }
     });
 
-    if (sessionPool.length > 0) {
-      setDeck(sessionPool);
+    if (finalDeck.length > 0) {
+      setDeck(finalDeck);
       setCurrentIndex(0);
-      setView('practice');
+      setView('drill');
     } else {
-      alert("No cards found! Ensure your Set and Category columns match your toggles.");
+      alert("No cards found!");
     }
   };
 
-  const playAudio = (url) => {
-    // 1. Check if the URL actually exists
-    if (!url || url.trim() === "") {
-      console.error("❌ AUDIO ERROR: The URL is empty or undefined. Check your Google Sheet headers!");
-      alert("I can't find an audio link for this card. Check your spreadsheet headers!");
-      return;
-    }
-
-    console.log("🔊 Attempting to play:", url);
-
-    const audio = new Audio(url);
-    
-    audio.play().catch(error => {
-      console.error("🚫 PLAYBACK BLOCKED:", error);
-      console.log("Hint: This usually means the file doesn't exist at that link or the format is wrong.");
-    });
-  };
-
-  // --- VIEWS ---
-
-// --- PHASE 1: LANDING PAGE ---
   if (view === 'landing') {
     return (
-      <div className="container">
-        <h1>Drill Deck 2.0</h1>
-        <button 
-          className="btn-general" 
-          onClick={() => { setMode('general'); setSelectedSet(13); setView('config'); }}
-        >
-          🚀 Jump to General Revision (Up to Set 13)
-        </button>
-
-        <hr style={{ margin: '30px 0', opacity: 0.2 }} />
-
-        <section>
-          <h2 style={{ marginBottom: '20px' }}>Practise a Specific Set:</h2>
-          <h3 style={{ color: '#666', fontSize: '1rem', textAlign: 'left' }}>Foundation Sets</h3>
-          <div className="grid">
-            {[...Array(13)].map((_, i) => (
-              <button key={i} onClick={() => { setMode('specific'); setSelectedSet(i + 1); setView('config'); }}>
-                Set {i + 1}
-              </button>
-            ))}
+      <>
+        <div className="app-banner"><h1>Drill Deck Plus</h1></div>
+        <div className="container">
+          <div className="glass-card">
+            <button className="btn-matching-style" style={{padding:'20px'}} onClick={() => { setMode('general'); setSelectedSet(13); setView('config'); }}>
+              🚀 Jump to General Revision
+            </button>
           </div>
-        </section>
-      </div>
+          <div className="glass-card">
+            <h3 style={{textAlign:'left', fontWeight:'600', marginBottom:'20px'}}>Foundation Sets</h3>
+            <div className="grid">
+              {[...Array(13)].map((_, i) => (
+                <button key={i} onClick={() => { setMode('specific'); setSelectedSet(i+1); setView('config'); }}>
+                  Set {i+1}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
 
-  // --- PHASE 2: CONFIGURATION PAGE ---
   if (view === 'config') {
     return (
       <div className="container">
-        <button className="btn-home" onClick={() => setView('landing')}>🏠 Home</button>
-        
-        <h2>{mode === 'general' ? `General Revision (Up to Set ${selectedSet})` : `Specific Practise: Set ${selectedSet}`}</h2>
-
-        {mode === 'general' && (
-          <div style={{ marginBottom: '30px' }}>
-            <p>Choose Revision Depth:</p>
-            <div className="depth-selector">
-              <button className={reviewDepth === 5 ? 'active' : ''} onClick={() => setReviewDepth(5)}>Snap Review</button>
-              <button className={reviewDepth === 10 ? 'active' : ''} onClick={() => setReviewDepth(10)}>Deep Dive</button>
-            </div>
+        <button className="btn-home-corner" onClick={() => setView('landing')}>🏠 Home</button>
+        <h2 style={{marginTop:'40px', fontWeight:'700'}}>{mode === 'general' ? 'General Revision' : `Specific Practise: Set ${selectedSet}`}</h2>
+        <div className="glass-card">
+          <p style={{fontWeight:'600'}}>Revision Depth (per component):</p>
+          <div className="selector-grid">
+            <button className={`chip-btn ${reviewDepth === 5 ? 'active' : ''}`} onClick={() => setReviewDepth(5)}>Snap Review (5)</button>
+            <button className={`chip-btn ${reviewDepth === 10 ? 'active' : ''}`} onClick={() => setReviewDepth(10)}>Deep Dive (10)</button>
           </div>
-        )}
-
-        <p>Select components to include:</p>
-        <div className="config-box">
-          {Object.keys(toggles).map(cat => (
-            (cat !== 'morpheme' || selectedSet >= 11) && (
-              <div key={cat} className="toggle-row">
-                <label className="switch">
-                  <input type="checkbox" checked={toggles[cat]} onChange={() => setToggles({...toggles, [cat]: !toggles[cat]})} />
-                  <span className="slider"></span>
-                </label>
-                <span className="toggle-label">{cat.toUpperCase()}</span>
-              </div>
-            )
-          ))}
         </div>
-        <br />
-        <button className="btn-start" onClick={startSession}>Start Session</button>
+        <div className="glass-card">
+          <p style={{fontWeight:'600'}}>Include Components:</p>
+          <div className="selector-grid">
+            {Object.keys(toggles).map(cat => (
+              <button key={cat} className={`chip-btn ${toggles[cat] ? 'active' : ''}`} onClick={() => setToggles({...toggles, [cat]: !toggles[cat]})}>
+                {cat.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <button className="btn-start" style={{marginTop:'40px'}} onClick={startSession}>Start Session →</button>
+        </div>
       </div>
     );
   }
 
-  // --- PHASE 3: PRACTICE (FLASHCARDS) ---
-  if (view === 'practice') {
-    const currentCard = deck[currentIndex];
+  if (view === 'drill') {
+    const card = deck[currentIndex];
+    const itemCat = card.Category?.toLowerCase().trim();
+    const isGPC = itemCat === 'gpc';
 
     return (
       <div className="container">
-        {/* Home is now isolated for top-left positioning */}
-        <button className="btn-home-corner" onClick={() => setView('landing')} title="Home">
-          🏠
-        </button>
-
-        {/* This row sits directly above the card and matches its width */}
-        <div className="card-controls-top">
-          <button className="btn-secondary" onClick={() => setView('config')}>
-            ← Back
-          </button>
-
-          {currentCard?.ExplainerURL && currentCard.ExplainerURL.trim() !== "" && (
-            <a 
-              href={currentCard.ExplainerURL} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="btn-teach"
-            >
+        <button className="btn-home-corner" onClick={() => setView('landing')}>🏠 Home</button>
+        <div className="card-wrapper">
+          <button className="card-tab back-tab" onClick={() => setView('config')}>← Back</button>
+          {card.ExplainerURL && (
+            <a href={card.ExplainerURL} target="_blank" rel="noreferrer" className="card-tab teach-tab">
               Teach Me 👩‍🏫
             </a>
           )}
-        </div>
-
-        {currentCard ? (
-          <div className={`card-container card-${currentCard.Category.toLowerCase()}`}>
-            <img src={currentCard.ImageURL} alt="Flashcard" className="flashcard-image" />
-            
-            <div className="audio-section">
-              {currentCard.AudioMain && currentCard.AudioMain.trim() !== "" && (
-                <button className="btn-audio" onClick={() => playAudio(currentCard.AudioMain)}>
-                  {currentCard.Category.toLowerCase() === 'gpc' ? 'Letter Name' : 'Play Word'}
-                </button>
-              )}
-
-              {currentCard.Category.toLowerCase() === 'gpc' && currentCard.AudioSound && currentCard.AudioSound.trim() !== "" && (
-                <button className="btn-audio" onClick={() => playAudio(currentCard.AudioSound)}>Sound</button>
+          <div className={`white-card ${itemCat}`}>
+            {card.ImageURL ? (
+              <img src={card.ImageURL} alt="drill" className="card-content-img" />
+            ) : (
+              <p className="card-content-text">{card.DisplayName}</p>
+            )}
+            <div className="audio-row">
+              {isGPC ? (
+                <>
+                  {card.AudioMain && <button className="btn-audio" onClick={() => playAudio(card.AudioMain)}>Grapheme ✏️</button>}
+                  {card.AudioSound && <button className="btn-audio" onClick={() => playAudio(card.AudioSound)}>Phoneme 👂</button>}
+                </>
+              ) : (
+                card.AudioMain && <button className="btn-audio" onClick={() => playAudio(card.AudioMain)}>hear word👂</button>
               )}
             </div>
           </div>
-        ) : <p>Loading cards...</p>}
-
-        <div className="nav-controls">
-          <button onClick={() => setCurrentIndex(c => c - 1)} disabled={currentIndex === 0}>← Prev</button>
-          <span className="counter">{currentIndex + 1} / {deck.length}</span>
-          <button onClick={() => {
-            if (currentIndex === deck.length - 1) { setView('finished'); } 
-            else { setCurrentIndex(c => c + 1); }
-          }}>
-            {currentIndex === deck.length - 1 ? 'Finish! 🎉' : 'Next →'}
-          </button>
+        </div>
+        <div className="drill-nav-controls">
+          <button className="nav-btn-edge" onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}>← Prev</button>
+          <div style={{fontWeight:'700', color:'#999'}}>{currentIndex + 1} / {deck.length}</div>
+          <button className="nav-btn-edge" onClick={() => {
+            if (currentIndex < deck.length - 1) setCurrentIndex(currentIndex + 1);
+            else setView('finished');
+          }}>Next →</button>
         </div>
       </div>
     );
   }
 
-  // --- PHASE 4: SUCCESS SCREEN ---
   if (view === 'finished') {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '50px' }}>
-        <h1 style={{ fontSize: '4rem' }}>🌟</h1>
-        <h2>Great Job!</h2>
-        <p>You finished your session of <strong>{deck.length}</strong> cards.</p>
-        <div style={{ marginTop: '30px' }}>
-          <button className="btn-start" onClick={() => setView('config')}>Practise Again</button>
-          <button onClick={() => setView('landing')} style={{ marginLeft: '10px', padding: '20px 30px' }}>Home</button>
+      <div className="container">
+        <div className="glass-card" style={{padding:'70px 20px'}}>
+            <span className="success-star">🌟</span>
+            <h2 style={{fontWeight:'700', fontSize:'2.4rem'}}>Great Job!</h2>
+            <p style={{marginBottom:'40px'}}>Session Complete.</p>
+            <button className="btn-start" onClick={() => setView('landing')}>Home</button>
         </div>
       </div>
     );
   }
+  return null;
 }
 
 export default App;
