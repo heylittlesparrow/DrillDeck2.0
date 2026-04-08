@@ -14,7 +14,11 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
-
+/* --- GLOBAL LINK RESET --- */
+a, a:visited, a:hover, a:active {
+  color: inherit; /* Inherits the #333 from the body */
+  text-decoration: none; /* Removes the default underline */
+}
 /* --- PHASE 1: BANNER & TITLE --- */
 .app-banner {
   background-color: var(--banner-gold);
