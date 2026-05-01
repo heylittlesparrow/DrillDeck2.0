@@ -24,6 +24,18 @@ function App() {
 
   const playAudio = (url) => { if (url) new Audio(url).play(); };
 
+  // --- DYNAMIC SET DISCOVERY ---
+  // This looks at every row in your sheet and finds unique Set numbers
+  const availableSets = [...new Set(allData.map(item => Number(item.Set)).filter(s => s > 0))].sort((a, b) => a - b);
+  
+  // Categorise them into your curriculum tiers
+  const foundationSets = availableSets.filter(s => s >= 1 && s <= 13);
+  const level1Sets = availableSets.filter(s => s >= 14 && s <= 26);
+  const level2Sets = availableSets.filter(s => s >= 27 && s <= 36);
+
+  // Find the ceiling for General Revision
+  const maxSetAvailable = Math.max(...availableSets, 0);
+
   const startSession = () => {
     const categoryOrder = ['gpc', 'decodable', 'hfw', 'morpheme', 'sentence'];
     let finalDeck = [];
@@ -46,30 +58,73 @@ function App() {
       setCurrentIndex(0);
       setView('drill');
     } else {
-      alert("No cards found!");
+      alert("No cards found for this set!");
     }
   };
+
+  // --- RENDERING ---
 
   if (view === 'landing') {
     return (
       <>
         <div className="app-banner"><h1>Drill Deck Plus</h1></div>
         <div className="container">
+          
+          {/* GENERAL REVISION SECTION */}
           <div className="glass-card">
-            <button className="btn-matching-style" style={{padding:'20px'}} onClick={() => { setMode('general'); setSelectedSet(13); setView('config'); }}>
-              🚀 Jump to General Revision
+            <button 
+              className="btn-matching-style" 
+              style={{padding:'20px'}} 
+              onClick={() => { 
+                setMode('general'); 
+                setSelectedSet(maxSetAvailable); // Dynamically hits the highest set
+                setView('config'); 
+              }}
+            >
+              🚀 Jump to General Revision (Sets 1-{maxSetAvailable})
             </button>
           </div>
+
+          {/* FOUNDATION SECTION */}
           <div className="glass-card">
             <h3 style={{textAlign:'left', fontWeight:'600', marginBottom:'20px'}}>Foundation Sets</h3>
             <div className="grid">
-              {[...Array(13)].map((_, i) => (
-                <button key={i} onClick={() => { setMode('specific'); setSelectedSet(i+1); setView('config'); }}>
-                  Set {i+1}
+              {foundationSets.map((setNum) => (
+                <button key={setNum} onClick={() => { setMode('specific'); setSelectedSet(setNum); setView('config'); }}>
+                  Set {setNum}
                 </button>
               ))}
             </div>
           </div>
+
+          {/* LEVEL 1 SECTION - Only appears if data exists */}
+          {level1Sets.length > 0 && (
+            <div className="glass-card">
+              <h3 style={{textAlign:'left', fontWeight:'600', marginBottom:'20px'}}>Level 1 Sets</h3>
+              <div className="grid">
+                {level1Sets.map((setNum) => (
+                  <button key={setNum} onClick={() => { setMode('specific'); setSelectedSet(setNum); setView('config'); }}>
+                    Set {setNum}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* LEVEL 2 SECTION - Only appears if data exists */}
+          {level2Sets.length > 0 && (
+            <div className="glass-card">
+              <h3 style={{textAlign:'left', fontWeight:'600', marginBottom:'20px'}}>Level 2 Sets</h3>
+              <div className="grid">
+                {level2Sets.map((setNum) => (
+                  <button key={setNum} onClick={() => { setMode('specific'); setSelectedSet(setNum); setView('config'); }}>
+                    Set {setNum}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       </>
     );
@@ -79,7 +134,7 @@ function App() {
     return (
       <div className="container">
         <button className="btn-home-corner" onClick={() => setView('landing')}>🏠 Home</button>
-        <h2 style={{marginTop:'40px', fontWeight:'700'}}>{mode === 'general' ? 'General Revision' : `Specific Practise: Set ${selectedSet}`}</h2>
+        <h2 style={{marginTop:'40px', fontWeight:'700'}}>{mode === 'general' ? `General Revision: Sets 1-${selectedSet}` : `Specific Practise: Set ${selectedSet}`}</h2>
         <div className="glass-card">
           <p style={{fontWeight:'600'}}>Revision Depth (per component):</p>
           <div className="selector-grid">
